@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Кирилл входит в трансцендентность</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      text-align: center;
+      margin: 40px;
+      background: #e6f7ff;
+    }
+    h1 {
+      font-size: 48px;
+      color: #004d99;
+    }
+    #big-timer {
+      font-size: 70px;
+      font-weight: bold;
+      color: #000;
+      margin: 20px 0 40px;
+    }
+    .block {
+      border: 2px solid #3399ff;
+      padding: 20px;
+      margin: 30px auto;
+      width: 70%;
+      background: #f0faff;
+    }
+    table {
+      width: 90%;
+      margin: 40px auto;
+      border-collapse: collapse;
+      font-size: 16px;
+    }
+    th, td {
+      border: 1px solid #3399ff;
+      padding: 10px;
+    }
+    .event-name {
+      text-align: left;
+    }
+    .checkbox-cell input {
+      transform: scale(1.4);
+    }
+  </style>
+</head>
+<body>
+
+  <h1>До момента, когда Кирилл полностью уходит в астрал:</h1>
+  <div id="big-timer">Загрузка...</div>
+
+  <div class="block">
+    Этот таймер отсчитывает время до пика веселья,<br>
+    когда Кирилл окончательно отрывается от физической реальности<br>
+    и отправляется в галлюциногенный вейп-парадокс.
+  </div>
+
+  <h2>🧠 Парадокс дня Кирилла:</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Событие</th>
+        <th>До события</th>
+        <th>✓</th>
+      </tr>
+    </thead>
+    <tbody id="event-table"></tbody>
+  </table>
+
+  <div class="block">
+    Отмечайте каждое событие галочкой — это поможет Кириллу отслеживать<br>
+    прогресс на пути к максимальной сингулярности. Состояние сохраняется.
+  </div>
+
+  <script>
+    const events = [
+      { name: "6:31 — Побег из реальности через электричку", time: "2025-04-26T06:31:00+05:00" },
+      { name: "11:41 — Внезапное прибытие в мегаполис", time: "2025-04-26T11:41:00+05:00" },
+      { name: "11:45 — Покупка новой одноразки с вкусом ягуара", time: "2025-04-26T11:45:00+05:00" },
+      { name: "12:30 — Дегустация нескольких бокалов игристого", time: "2025-04-26T12:30:00+05:00" },
+      { name: "14:00 — Вход в банные пространства", time: "2025-04-26T14:00:00+05:00" },
+      { name: "14:15 — Ритуальное вкушение зелья бодрости", time: "2025-04-26T14:15:00+05:00" },
+      { name: "14:30 — Очищение духа через жар-парение", time: "2025-04-26T14:30:00+05:00" },
+      { name: "15:00 — Разрешение на безграничное веселье", time: "2025-04-26T15:00:00+05:00" },
+      { name: "15:30 — Выпить серьёзное и посмотреть на фонтан", time: "2025-04-26T15:30:00+05:00" },
+      { name: "18:00 — Участие в телешоу 'Узнай мелодию'", time: "2025-04-26T18:00:00+05:00" },
+      { name: "18:30 — Быть навеселе для музыкального экстаза", time: "2025-04-26T18:30:00+05:00" },
+      { name: "20:30 — Принять пищу в элитной столовой", time: "2025-04-26T20:30:00+05:00" },
+      { name: "21:30 — Открытие портала бесконечного веселья", time: "2025-04-26T21:30:00+05:00" },
+      { name: "23:00 — Кирилл не различает временные слои", time: "2025-04-26T23:00:00+05:00" },
+      { name: "00:00 — Невозможность отличить стену от потолка", time: "2025-04-27T00:00:00+05:00" }
+    ];
+
+    const bigEventTime = new Date("2025-04-26T23:00:00+05:00").getTime();
+
+    function updateTimer(id, targetTime) {
+      const now = new Date().getTime();
+      const diff = targetTime - now;
+
+      if (diff <= 0) {
+        document.getElementById(id).innerText = "Переход завершён!";
+        return;
+      }
+
+      const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const s = Math.floor((diff % (1000 * 60)) / 1000);
+
+      document.getElementById(id).innerText = `${d}д ${h}ч ${m}м ${s}с`;
+    }
+
+    setInterval(() => {
+      updateTimer('big-timer', bigEventTime);
+    }, 1000);
+
+    // Таблица событий
+    const tableBody = document.getElementById("event-table");
+
+    events.forEach((event, index) => {
+      const row = document.createElement("tr");
+
+      const nameCell = document.createElement("td");
+      nameCell.classList.add("event-name");
+      nameCell.innerText = event.name;
+
+      const timerCell = document.createElement("td");
+      const timerId = `event-timer-${index}`;
+      timerCell.id = timerId;
+
+      const checkboxCell = document.createElement("td");
+      checkboxCell.classList.add("checkbox-cell");
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.checked = localStorage.getItem(`kirill-checkbox-${index}`) === "true";
+      checkbox.addEventListener("change", () => {
+        localStorage.setItem(`kirill-checkbox-${index}`, checkbox.checked);
+      });
+      checkboxCell.appendChild(checkbox);
+
+      row.appendChild(nameCell);
+      row.appendChild(timerCell);
+      row.appendChild(checkboxCell);
+      tableBody.appendChild(row);
+
+      setInterval(() => {
+        updateTimer(timerId, new Date(event.time).getTime());
+      }, 1000);
+    });
+  </script>
+
+</body>
+</html>
