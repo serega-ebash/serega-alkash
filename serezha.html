@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Серёжа нажрётся через...</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      text-align: center;
+      margin: 40px;
+      background: #fffbe6;
+    }
+    h1 {
+      font-size: 48px;
+      color: #003366;
+    }
+    #big-timer {
+      font-size: 72px;
+      font-weight: bold;
+      color: #000;
+      margin: 20px 0 40px;
+    }
+    .block {
+      border: 2px dashed #aaa;
+      padding: 20px;
+      margin: 30px auto;
+      width: 70%;
+      background: #f0f0f0;
+    }
+    #vape-timer {
+      font-size: 16px;
+      margin-top: -10px;
+      color: #666;
+    }
+    table {
+      width: 90%;
+      margin: 40px auto;
+      border-collapse: collapse;
+      font-size: 16px;
+    }
+    th, td {
+      border: 1px solid #aaa;
+      padding: 10px;
+    }
+    .event-name {
+      text-align: left;
+    }
+    .checkbox-cell input {
+      transform: scale(1.4);
+    }
+  </style>
+</head>
+<body>
+
+  <h1>До того момента, как Серёжа жёстко нажрётся:</h1>
+  <div id="big-timer">Загрузка...</div>
+
+  <div class="block">
+    Таймер показывает, сколько расчётного времени осталось до того момента,<br>
+    когда Серёжа очень сильно жёстко нажрётся и уже будет <b>не в минозе</b>.
+  </div>
+
+  <div id="vape-timer">До разрешения на вейп — 26 апреля, 11:00 (Пермь)</div>
+
+  <h2>📅 Расписание Серёжи:</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Событие</th>
+        <th>До события</th>
+        <th>✓</th>
+      </tr>
+    </thead>
+    <tbody id="event-table"></tbody>
+  </table>
+
+  <div class="block">
+    Каждый раз, когда наступает событие, нужно поставить галочку ✅.<br>
+    Галочки сохраняются даже после перезагрузки страницы.
+  </div>
+
+  <script>
+    const events = [
+      { name: "6:31 — Выезд и отбывает паровоз", time: "2025-04-26T06:31:00+05:00" },
+      { name: "11:41 — Прибытие в Екатеринбург", time: "2025-04-26T11:41:00+05:00" },
+      { name: "11:45 — Разрешение на вейп", time: "2025-04-26T11:45:00+05:00" },
+      { name: "12:30 — Завтрак и первый аперитив", time: "2025-04-26T12:30:00+05:00" },
+      { name: "14:00 — Посещение бань", time: "2025-04-26T14:00:00+05:00" },
+      { name: "14:15 — Выпить нормально", time: "2025-04-26T14:15:00+05:00" },
+      { name: "14:30 — Парение до разнесения", time: "2025-04-26T14:30:00+05:00" },
+      { name: "15:00 — Полное снятие ограничений", time: "2025-04-26T15:00:00+05:00" },
+      { name: "15:30 — Выпить крепкое и фонтан", time: "2025-04-26T15:30:00+05:00" },
+      { name: "18:00 — Угадай мелодию", time: "2025-04-26T18:00:00+05:00" },
+      { name: "18:30 — Быть под шофе", time: "2025-04-26T18:30:00+05:00" },
+      { name: "20:30 — Посещение ресторана", time: "2025-04-26T20:30:00+05:00" },
+      { name: "21:30 — Жёсткое бухание", time: "2025-04-26T21:30:00+05:00" },
+      { name: "23:00 — Серёжа не в минозе", time: "2025-04-26T23:00:00+05:00" },
+      { name: "00:00 — Не различает пол и потолок", time: "2025-04-27T00:00:00+05:00" }
+    ];
+
+    const bigEventTime = new Date("2025-04-26T23:00:00+05:00").getTime();
+    const vapeTime = new Date("2025-04-26T11:00:00+05:00").getTime();
+
+    function updateTimer(id, targetTime) {
+      const now = new Date().getTime();
+      const diff = targetTime - now;
+
+      if (diff <= 0) {
+        document.getElementById(id).innerText = "Событие уже произошло!";
+        return;
+      }
+
+      const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const s = Math.floor((diff % (1000 * 60)) / 1000);
+
+      document.getElementById(id).innerText = `${d}д ${h}ч ${m}м ${s}с`;
+    }
+
+    setInterval(() => {
+      updateTimer('big-timer', bigEventTime);
+    }, 1000);
+
+    // Таблица событий
+    const tableBody = document.getElementById("event-table");
+
+    events.forEach((event, index) => {
+      const row = document.createElement("tr");
+
+      const nameCell = document.createElement("td");
+      nameCell.classList.add("event-name");
+      nameCell.innerText = event.name;
+
+      const timerCell = document.createElement("td");
+      const timerId = `event-timer-${index}`;
+      timerCell.id = timerId;
+
+      const checkboxCell = document.createElement("td");
+      checkboxCell.classList.add("checkbox-cell");
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.checked = localStorage.getItem(`checkbox-${index}`) === "true";
+      checkbox.addEventListener("change", () => {
+        localStorage.setItem(`checkbox-${index}`, checkbox.checked);
+      });
+      checkboxCell.appendChild(checkbox);
+
+      row.appendChild(nameCell);
+      row.appendChild(timerCell);
+      row.appendChild(checkboxCell);
+      tableBody.appendChild(row);
+
+      setInterval(() => {
+        updateTimer(timerId, new Date(event.time).getTime());
+      }, 1000);
+    });
+
+    // Маленький таймер вейпа
+    function updateVapeTimer() {
+      const now = new Date().getTime();
+      const diff = vapeTime - now;
+
+      if (diff <= 0) {
+        document.getElementById("vape-timer").innerText = "Вейп уже разрешён.";
+        return;
+      }
+
+      const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const s = Math.floor((diff % (1000 * 60)) / 1000);
+
+      document.getElementById("vape-timer").innerText =
+        `До разрешения на вейп — ${h}ч ${m}м ${s}с (26 апреля, 11:00 Пермь)`;
+    }
+
+    setInterval(updateVapeTimer, 1000);
+    updateVapeTimer();
+  </script>
+
+</body>
+</html>
