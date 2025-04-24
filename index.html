@@ -2,46 +2,143 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>Обратный отсчёт до события</title>
+  <title>Серёжа нажрётся через...</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Arial', sans-serif;
       text-align: center;
-      margin-top: 100px;
+      margin: 40px;
+      background: #fffbe6;
     }
-    #timer {
-      font-size: 48px;
-      color: #333;
+    h1 {
+      font-size: 42px;
+      color: #a00;
+    }
+    .block {
+      border: 2px dashed #aaa;
+      padding: 20px;
+      margin: 30px auto;
+      width: 60%;
+      background: #f9f9f9;
+    }
+    #big-timer, #vape-timer {
+      font-size: 36px;
+      margin: 20px 0;
+    }
+    table {
+      width: 80%;
+      margin: 40px auto;
+      border-collapse: collapse;
+    }
+    th, td {
+      border: 1px solid #aaa;
+      padding: 10px;
+    }
+    .event-name {
+      text-align: left;
+    }
+    .checkbox-cell input {
+      transform: scale(1.4);
     }
   </style>
 </head>
 <body>
-  <h1>До события осталось:</h1>
-  <div id="timer">Загрузка...</div>
+
+  <h1>До того момента, как Серёжа жёстко нажрётся:</h1>
+  <div id="big-timer">Загрузка...</div>
+
+  <div class="block">
+    Таймер показывает, сколько расчётного времени осталось до того момента,<br>
+    когда Серёжа очень сильно жёстко нажрётся и уже будет <b>не в минозе</b>.
+  </div>
+
+  <h2>До разрешения на вейп:</h2>
+  <div id="vape-timer">Загрузка...</div>
+
+  <h2>📅 Расписание:</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Событие</th>
+        <th>До события</th>
+        <th>✓</th>
+      </tr>
+    </thead>
+    <tbody id="event-table">
+      <!-- строки добавим скриптом -->
+    </tbody>
+  </table>
 
   <script>
-    const eventDate = new Date("2025-05-01T00:00:00").getTime();
+    // Большой таймер (обнови дату позже)
+    const drunkTime = new Date("2025-04-26T22:00:00+05:00").getTime(); // Пермское время
+    const vapeTime = new Date("2025-04-26T11:00:00+05:00").getTime();
 
-    function updateTimer() {
+    function updateTimer(id, targetTime) {
       const now = new Date().getTime();
-      const distance = eventDate - now;
+      const diff = targetTime - now;
 
-      if (distance < 0) {
-        document.getElementById("timer").innerText = "Событие уже наступило!";
+      if (diff <= 0) {
+        document.getElementById(id).innerText = "Событие уже произошло!";
         return;
       }
 
-      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+      const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const s = Math.floor((diff % (1000 * 60)) / 1000);
 
-      document.getElementById("timer").innerText =
-        `${days}д ${hours}ч ${minutes}м ${seconds}с`;
+      document.getElementById(id).innerText = `${d}д ${h}ч ${m}м ${s}с`;
     }
 
-    setInterval(updateTimer, 1000);
-    updateTimer();
+    setInterval(() => {
+      updateTimer('big-timer', drunkTime);
+      updateTimer('vape-timer', vapeTime);
+    }, 1000);
+
+    // Таблица событий
+    const events = [
+      { name: "Выезд из дома", time: "2025-04-26T07:30:00+05:00" },
+      { name: "Посадка на поезд", time: "2025-04-26T08:15:00+05:00" },
+      { name: "Прибытие в Екатеринбург", time: "2025-04-26T11:00:00+05:00" },
+      { name: "Первый бокал пива", time: "2025-04-26T12:00:00+05:00" },
+      { name: "Купание в фонтане", time: "2025-04-26T17:00:00+05:00" },
+      { name: "Серёжа не в минозе", time: "2025-04-26T22:00:00+05:00" }
+    ];
+
+    const tableBody = document.getElementById("event-table");
+
+    events.forEach((event, index) => {
+      const row = document.createElement("tr");
+
+      const nameCell = document.createElement("td");
+      nameCell.classList.add("event-name");
+      nameCell.innerText = event.name;
+
+      const timerCell = document.createElement("td");
+      const timerId = `event-timer-${index}`;
+      timerCell.id = timerId;
+
+      const checkboxCell = document.createElement("td");
+      checkboxCell.classList.add("checkbox-cell");
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.checked = localStorage.getItem(`checkbox-${index}`) === "true";
+      checkbox.addEventListener("change", () => {
+        localStorage.setItem(`checkbox-${index}`, checkbox.checked);
+      });
+      checkboxCell.appendChild(checkbox);
+
+      row.appendChild(nameCell);
+      row.appendChild(timerCell);
+      row.appendChild(checkboxCell);
+      tableBody.appendChild(row);
+
+      setInterval(() => {
+        updateTimer(timerId, new Date(event.time).getTime());
+      }, 1000);
+    });
   </script>
+
 </body>
 </html>
